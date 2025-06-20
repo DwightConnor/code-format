@@ -1,221 +1,394 @@
-# Editor Format - 智能代码编辑器
+Editor Format - Smart Code Editor
+A powerful uTools plugin that provides multi-language code formatting, syntax highlighting, and editing features.
 
-一个功能强大的uTools插件，提供多语言代码格式化、语法高亮和编辑功能。
+🚀 Features
+Core Features
+🖱️ Middle-click Quick Launch: Click the middle mouse button to quickly launch uTools and automatically open the editor, pre-loading content from the clipboard.
 
-## 🚀 功能特性
+Multi-language Support: Automatically detects and highlights various programming languages such as JSON, JavaScript, Java, SQL, HTML, Shell, and more.
 
-### 核心功能
-- **🖱️ 鼠标中键快速启动**: 点击鼠标中键即可快速唤起uTools并自动显示编辑器，同时自动加载剪贴板内容
-- **多语言支持**: 自动识别并高亮显示JSON、JavaScript、Java、SQL、HTML、Shell等多种编程语言
-- **智能格式化**: 一键格式化代码，支持自定义缩进和样式
-- **实时语法高亮**: 基于Monaco Editor提供专业级代码编辑体验
-- **搜索替换**: 支持正则表达式的强大搜索和替换功能
-- **行数跳转**: 快速跳转到指定行号
-- **主题切换**: 支持明暗主题切换
-- **📋 全局文本选择**: 在任意地方选中文本后，通过uTools快捷键直接启动插件并导入选中内容
-- **📋 智能剪贴板集成**: 自动读取剪贴板内容，支持一键粘贴和复制功能，自动聚焦并定位光标
+Smart Formatting: One-click code formatting with support for custom indentation and styles.
 
-### JSON专属功能
-- **键排序**: A-Z或Z-A键名排序
-- **代码压缩**: 移除空格和换行，生成紧凑格式
-- **转义处理**: 
-  - 加转义：将JSON转换为字符串格式
-  - 去转义：解析转义的JSON字符串
+Real-time Syntax Highlighting: Provides a professional-grade code editing experience based on Monaco Editor.
 
-### 其他功能
-- **🚀 多实例支持**: 支持同时打开多个编辑器窗口，每个实例内容完全独立互不影响
-- **全屏模式**: 提供专注的编辑环境
-- **复制功能**: 一键复制所有内容到系统剪贴板
-- **粘贴功能**: 一键粘贴剪贴板内容到编辑器
-- **实时统计**: 显示行数、字符数和光标位置
-- **智能启动**: 支持选中文本启动和空白编辑器两种模式
+Search and Replace: Powerful search and replace functionality with support for regular expressions.
 
-## 📦 安装条件
+Go to Line: Quickly jump to a specific line number.
 
-### 系统要求
-- **操作系统**: Windows 10/11, macOS 10.14+, Linux (Ubuntu 18.04+)
-- **uTools版本**: 2.0.0 及以上
-- **内存**: 至少 512MB 可用内存
-- **网络**: 需要互联网连接（用于加载Monaco Editor和相关库）
+Theme Switching: Supports switching between light and dark themes.
 
-### 软件依赖
-1. **uTools**: 
-   - 下载地址: [https://www.u-tools.cn](https://www.u-tools.cn)
-   - 安装并激活uTools
+📋 Global Text Selection: Select text anywhere, then use a uTools hotkey to launch the plugin and import the selected content directly.
 
-2. **uTools开发者工具** (仅开发时需要):
-   - 在uTools插件市场搜索"uTools开发者工具"
-   - 安装并获取开发者工具
+📋 Smart Clipboard Integration: Automatically reads clipboard content, supports one-click paste and copy, and automatically focuses and positions the cursor.
 
-### 外部依赖 (自动加载)
-- Monaco Editor (v0.48.0) - 代码编辑器核心
-- Tailwind CSS - UI样式框架
-- js-beautify (v1.15.1) - JavaScript/Java代码格式化
-- node-sql-parser - SQL语句解析和格式化
+JSON-specific Features
+Key Sorting: Sort keys by name from A-Z or Z-A.
 
-## 🛠️ 安装方法
+Code Minification: Remove spaces and newlines to generate a compact format.
 
-### 方法一：通过uTools开发者工具 (推荐)
-1. 打开uTools开发者工具
-2. 点击"新建项目"或"导入项目"
-3. 选择本项目的plugin.json文件
-4. 点击"接入开发"
-5. 在uTools中输入关键词启动插件
+Escape Handling:
 
-### 方法二：手动安装
-1. 确保project文件夹包含以下文件：
-   ```
-   editor-format/
-   ├── plugin.json     # 插件配置文件
-   ├── index.html      # 主界面文件
-   ├── logo.png        # 插件图标
-   └── README.md       # 说明文档
-   ```
-2. 打开uTools开发者工具
-3. 导入整个文件夹
+Escape: Convert JSON to a string format.
 
-## 🎯 使用方法
+Unescape: Parse an escaped JSON string.
 
-### 启动插件
+Other Features
+🚀 Multi-instance Support: Supports opening multiple editor windows simultaneously, with each instance's content being completely independent.
 
-#### 方式一：鼠标中键快速启动（⭐ 新功能）
-1. **选中文本优先**: 先选中任意文本，然后点击鼠标中键唤起uTools
-   - 插件会自动显示为"快速编辑选中文本"
-   - 会显示通知："快速编辑器已启动，已加载选中文本内容，共X字符"
-   
-2. **剪贴板内容备用**: 如果没有选中文本，直接点击鼠标中键
-   - 插件会自动显示为"快速编辑器"
-   - 自动加载剪贴板内容到编辑框中
-   - 会显示通知："快速编辑器已启动，已加载剪贴板内容，共X字符"
-   
-3. **智能工作流程**: 
-   ```
-   选中文本 → 中键 → 直接编辑选中内容
-   或
-   中键 → 自动加载剪贴板 → 开始编辑
-   ```
-   - 编辑器自动聚焦，光标定位到内容末尾，可立即开始编辑
+Full-screen Mode: Provides a distraction-free editing environment.
 
-#### 方式二：全局文本选择（推荐）
-1. **选中任意文本**: 在任何应用程序中选中需要格式化的代码文本
-2. **调出uTools**: 使用uTools的全局快捷键（默认Alt+Space或自定义快捷键）
-3. **直接启动**: 插件会自动识别选中的文本并直接启动格式化功能
-   - 会显示通知："已获取选中文本，共X字符"
-   - 编辑器会自动加载选中的内容并进行语言识别
+Copy Function: One-click to copy all content to the system clipboard.
 
-#### 方式三：关键词启动
-在uTools中输入以下任一关键词：
-- `代码格式化`
-- `editor-format`
-- `代码编辑器`
-- `json格式化`
-- `sql格式化`
-- `java格式化`
-- `javascript格式化`
-- `html格式化`
-- `代码美化`
-- `格式化工具`
+Paste Function: One-click to paste clipboard content into the editor.
 
-#### 方式四：剪贴板模式
-1. 复制需要格式化的代码到剪贴板
-2. 使用关键词启动插件
-3. 插件会自动检测并加载剪贴板内容
-   - 会显示通知："已加载剪贴板内容，共X字符"
-   - 编辑器会自动填入剪贴板内容
+Real-time Stats: Displays line count, character count, and cursor position.
 
-### 基本操作
-1. **加载内容**: 
-   - 选中文本启动：自动加载选中的文本
-   - 关键词启动：自动加载剪贴板内容
-   - 手动输入：直接在编辑器中输入代码
-2. **多实例使用**:
-   - 可以同时启动多个编辑器实例
-   - 每个实例在窗口标题显示唯一编号（如：智能代码编辑器 #1234）
-   - 每个实例的内容完全独立，互不影响
-   - 可以同时编辑不同的代码片段
-3. **自动识别**: 插件会自动识别代码语言类型并应用语法高亮
-4. **格式化**: 点击顶部菜单栏的"格式化"按钮进行代码美化
-5. **主题切换**: 点击"主题"按钮切换明暗主题
-6. **搜索**: 点击"搜索"按钮或使用Ctrl+F进行查找
-7. **剪贴板操作**: 
-   - 点击"粘贴剪贴板"按钮导入最新的剪贴板内容
-   - 点击"复制"按钮将编辑器内容复制到剪贴板
+Smart Launch: Supports launching with selected text or as a blank editor.
 
-### JSON特殊操作
-当检测到JSON格式时，会显示额外的功能按钮：
-- **A-Z**: 按键名A-Z排序
-- **Z-A**: 按键名Z-A排序
-- **压缩**: 移除格式化，生成单行JSON
-- **加转义**: 将JSON转换为字符串格式
-- **去转义**: 解析转义的JSON字符串
+📦 Installation Requirements
+System Requirements
+Operating System: Windows 10/11, macOS 10.14+, Linux (Ubuntu 18.04+)
 
-## 🔧 快捷键
-- `Ctrl+F` / `Cmd+F`: 搜索
-- `Ctrl+H` / `Cmd+H`: 替换
-- `Ctrl+G` / `Cmd+G`: 跳转到行
-- `F11`: 全屏切换
-- `Ctrl+A` / `Cmd+A`: 全选
-- `Ctrl+C` / `Cmd+C`: 复制
-- `Ctrl+V` / `Cmd+V`: 粘贴
+uTools Version: 2.0.0 and above
 
-## 📝 支持的语言格式
+Memory: At least 512MB of available RAM
 
-| 语言 | 格式化支持 | 语法高亮 | 自动识别 |
-|------|-----------|----------|----------|
-| JSON | ✅ | ✅ | ✅ |
-| JavaScript | ✅ | ✅ | ✅ |
-| Java | ✅ | ✅ | ✅ |
-| SQL | ✅ | ✅ | ✅ |
-| HTML | ✅ | ✅ | ✅ |
-| CSS | ✅ | ✅ | ✅ |
-| XML | ✅ | ✅ | ✅ |
-| Shell | ⚡ | ✅ | ✅ |
-| Python | ⚡ | ✅ | ⚡ |
-| C/C++ | ⚡ | ✅ | ⚡ |
-| TypeScript | ⚡ | ✅ | ⚡ |
+Network: Internet connection required (for loading Monaco Editor and related libraries)
 
-> ✅ 完全支持 | ⚡ 基础支持
+Software Dependencies
+uTools:
 
-## 🐛 常见问题
+Download at: https://www.u-tools.cn
 
-### Q: 插件无法启动？
-A: 
-1. 检查uTools版本是否为2.0.0及以上
-2. 确认plugin.json文件格式正确
-3. 检查网络连接，确保可以加载外部资源
+Install and activate uTools.
 
-### Q: 多开功能如何使用？
-A: 
-1. **启动多个实例**: 可以通过以下方式同时启动多个编辑器：
-   - 方法1：在不同位置选中文本，然后分别使用uTools启动
-   - 方法2：多次输入关键词（如"代码格式化"）启动新实例
-   - 方法3：使用鼠标中键在不同时间启动多个实例
-2. **实例区分**: 每个实例的窗口标题和状态栏都会显示不同的实例编号
-3. **独立内容**: 每个实例的编辑内容完全独立，互不影响
-4. **实例管理**: 可以通过任务栏或Alt+Tab切换不同的编辑器实例
+uTools Developer Tools (Only required for development):
 
-### Q: 格式化功能不工作？
-A: 
-1. 确认代码语法正确
-2. 检查是否支持该语言的格式化
-3. 尝试手动选择语言类型
+Search for "uTools Developer Tools" in the uTools plugin market.
 
-### Q: 无法加载Monaco Editor？
-A: 
-1. 检查网络连接
-2. 确认防火墙没有阻止CDN资源加载
-3. 尝试刷新或重启插件
+Install and acquire the developer tools.
 
-## 📄 版本信息
-- **当前版本**: 1.0.0
-- **开发者**: Developer
-- **兼容平台**: Windows, macOS, Linux
+External Dependencies (Auto-loaded)
+Monaco Editor (v0.48.0) - Core code editor
 
-## 📞 技术支持
-如遇到问题或有改进建议，欢迎通过以下方式联系：
-- 在uTools插件市场留言
-- 提交GitHub Issue (如有)
+Tailwind CSS - UI styling framework
 
----
+js-beautify (v1.15.1) - JavaScript/Java code formatting
 
-**享受高效的代码编辑体验！** 🎉 
+node-sql-parser - SQL statement parsing and formatting
+
+🛠️ Installation Method
+Method One: Via uTools Developer Tools (Recommended)
+Open the uTools Developer Tools.
+
+Click "New Project" or "Import Project".
+
+Select this project's plugin.json file.
+
+Click "Start Development".
+
+Enter a keyword in uTools to launch the plugin.
+
+Method Two: Manual Installation
+Ensure the project folder contains the following files:
+
+editor-format/
+├── plugin.json      # Plugin configuration file
+├── index.html       # Main interface file
+├── logo.png         # Plugin icon
+└── README.md        # Documentation
+
+Open the uTools Developer Tools.
+
+Import the entire folder.
+
+🎯 How to Use
+Launching the Plugin
+Method 1: Middle-click Quick Launch (⭐ New Feature)
+Selected Text Priority: First, select any text, then click the middle mouse button to bring up uTools.
+
+The plugin will automatically appear as "Quick Edit Selected Text".
+
+A notification will show: "Quick Editor started, loaded selected text, X characters total."
+
+Clipboard Content Fallback: If no text is selected, simply click the middle mouse button.
+
+The plugin will automatically appear as "Quick Editor".
+
+It will automatically load the clipboard content into the editor.
+
+A notification will show: "Quick Editor started, loaded clipboard content, X characters total."
+
+Smart Workflow:
+
+Select text → Middle-click → Directly edit the selected content
+or
+Middle-click → Auto-load clipboard → Start editing
+
+The editor automatically gains focus, with the cursor placed at the end of the content, ready for immediate editing.
+
+Method 2: Global Text Selection (Recommended)
+Select Any Text: In any application, select the code text you want to format.
+
+Bring up uTools: Use the uTools global hotkey (default Alt+Space or custom hotkey).
+
+Direct Launch: The plugin will automatically recognize the selected text and launch the formatting function directly.
+
+A notification will show: "Acquired selected text, X characters total."
+
+The editor will automatically load the selected content and perform language detection.
+
+Method 3: Keyword Launch
+Enter any of the following keywords in uTools:
+
+code format
+
+editor-format
+
+code editor
+
+json format
+
+sql format
+
+java format
+
+javascript format
+
+html format
+
+code beautify
+
+format tool
+
+Method 4: Clipboard Mode
+Copy the code you want to format to the clipboard.
+
+Launch the plugin using a keyword.
+
+The plugin will automatically detect and load the clipboard content.
+
+A notification will show: "Loaded clipboard content, X characters total."
+
+The editor will automatically be filled with the clipboard content.
+
+Basic Operations
+Loading Content:
+
+Launch with selected text: Automatically loads the selected text.
+
+Launch with keyword: Automatically loads clipboard content.
+
+Manual input: Directly type code into the editor.
+
+Multi-instance Use:
+
+You can launch multiple editor instances simultaneously.
+
+Each instance displays a unique ID in the window title (e.g., Smart Code Editor #1234).
+
+The content of each instance is completely independent.
+
+You can edit different code snippets at the same time.
+
+Auto-detection: The plugin automatically detects the code language and applies syntax highlighting.
+
+Formatting: Click the "Format" button in the top menu bar to beautify the code.
+
+Theme Switching: Click the "Theme" button to switch between light and dark themes.
+
+Searching: Click the "Search" button or use Ctrl+F to find text.
+
+Clipboard Operations:
+
+Click the "Paste from Clipboard" button to import the latest clipboard content.
+
+Click the "Copy" button to copy the editor's content to the clipboard.
+
+Special JSON Operations
+When JSON format is detected, additional function buttons will appear:
+
+A-Z: Sort keys by name from A-Z.
+
+Z-A: Sort keys by name from Z-A.
+
+Minify: Remove formatting to generate single-line JSON.
+
+Escape: Convert the JSON object into a string format.
+
+Unescape: Parse an escaped JSON string.
+
+🔧 Keyboard Shortcuts
+Ctrl+F / Cmd+F: Search
+
+Ctrl+H / Cmd+H: Replace
+
+Ctrl+G / Cmd+G: Go to Line
+
+F11: Toggle Full Screen
+
+Ctrl+A / Cmd+A: Select All
+
+Ctrl+C / Cmd+C: Copy
+
+Ctrl+V / Cmd+V: Paste
+
+📝 Supported Language Formats
+Language
+
+Formatting
+
+Syntax Highlighting
+
+Auto-detection
+
+JSON
+
+✅
+
+✅
+
+✅
+
+JavaScript
+
+✅
+
+✅
+
+✅
+
+Java
+
+✅
+
+✅
+
+✅
+
+SQL
+
+✅
+
+✅
+
+✅
+
+HTML
+
+✅
+
+✅
+
+✅
+
+CSS
+
+✅
+
+✅
+
+✅
+
+XML
+
+✅
+
+✅
+
+✅
+
+Shell
+
+⚡
+
+✅
+
+✅
+
+Python
+
+⚡
+
+✅
+
+⚡
+
+C/C++
+
+⚡
+
+✅
+
+⚡
+
+TypeScript
+
+⚡
+
+✅
+
+⚡
+
+✅ Fully supported | ⚡ Basic support
+
+🐛 FAQ
+Q: The plugin fails to start?
+A:
+
+Check if the uTools version is 2.0.0 or higher.
+
+Verify that the plugin.json file is correctly formatted.
+
+Check your network connection to ensure external resources can be loaded.
+
+Q: How to use the multi-instance feature?
+A:
+
+Launch Multiple Instances: You can start multiple editors simultaneously in the following ways:
+
+Method 1: Select text in different locations and launch the plugin with uTools for each one.
+
+Method 2: Repeatedly enter a keyword (like "code format") to launch new instances.
+
+Method 3: Use the middle mouse button at different times to launch multiple instances.
+
+Instance Differentiation: The window title and status bar of each instance will display a different instance ID.
+
+Independent Content: The content of each instance is completely separate and does not affect others.
+
+Instance Management: You can switch between different editor instances using the taskbar or Alt+Tab.
+
+Q: The formatting feature doesn't work?
+A:
+
+Confirm that the code syntax is correct.
+
+Check if formatting is supported for that language.
+
+Try manually selecting the language type.
+
+Q: Cannot load Monaco Editor?
+A:
+
+Check your network connection.
+
+Ensure your firewall is not blocking CDN resources.
+
+Try refreshing or restarting the plugin.
+
+📄 Version Information
+Current Version: 1.0.0
+
+Developer: Developer
+
+Compatible Platforms: Windows, macOS, Linux
+
+📞 Technical Support
+If you encounter problems or have suggestions for improvement, please contact us via the following methods:
+
+Leave a message in the uTools plugin market.
+
+Submit a GitHub Issue (if available).
+
+Enjoy an efficient code editing experience! 🎉
