@@ -1,0 +1,81 @@
+{
+  "logo": "logo.png",
+  "main": "index.html",
+  "preload": "preload.js",
+  "development": {
+    "main": "index.html",
+    "preload": "preload.js"
+  },
+  "single": false,
+  "pluginSetting": {
+    "single": false
+  },
+  "features": [
+    {
+      "code": "format-selected",
+      "explain": "格式化选中的文本内容",
+      "icon": "logo.png", 
+      "cmds": [
+        {
+          "type": "regex",
+          "label": "格式化选中文本",
+          "match": ".+",
+          "minLength": 1
+        }
+      ]
+    },
+    {
+      "code": "editor-format",
+      "explain": "智能代码编辑器 - 多语言代码格式化工具",
+      "icon": "logo.png",
+      "cmds": [
+        "代码格式化",
+        "editor-format", 
+        "代码编辑器",
+        "json格式化",
+        "sql格式化",
+        "java格式化",
+        "javascript格式化",
+        "html格式化",
+        "代码美化",
+        "格式化工具"
+      ]
+    },
+    {
+      "code": "quick-editor",
+      "explain": "快速代码编辑器 - 鼠标中键快速启动",
+      "icon": "logo.png",
+      "cmds": [
+        {
+          "type": "over",
+          "label": "CodeFormat"
+        },
+        {
+          "type": "regex",
+          "label": "快速编辑选中文本",
+          "match": ".+",
+          "minLength": 1
+        }
+      ]
+    },
+    {
+      "code": "multi-editor",
+      "explain": "多标签代码编辑器 - 支持多标签页编辑",
+      "icon": "logo.png",
+      "main": "multi-editor.html",
+      "cmds": [
+        "多标签编辑器",
+        "multi-editor",
+        "标签编辑器",
+        "多窗口编辑",
+        "标签代码编辑"
+      ]
+    }
+  ],
+  "pluginName": "Editor Format",
+  "description": "智能代码编辑器，支持多种编程语言的代码格式化、语法高亮、搜索替换等功能。自动识别JSON、SQL、Java、JavaScript、HTML等语言类型，提供专业的代码编辑体验。支持全局文本选择和剪贴板内容导入。",
+  "author": "Developer",
+  "homepage": "",
+  "version": "1.0.0",
+  "platform": ["win32", "darwin", "linux"]
+} 

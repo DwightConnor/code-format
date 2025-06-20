@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多标签代码编辑器</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="css/tailwindcss.js"></script>
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+        .main-container { height: 100vh; display: flex; flex-direction: column; }
+        #editor-container { flex-grow: 1; width: 100%; }
+        .tab-active { background-color: #3b82f6; color: white; }
+        .tab-inactive { background-color: #6b7280; color: #d1d5db; }
+        .tab-item {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem 0.375rem 0 0;
+            margin-right: 0.25rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            max-width: 200px;
+        }
+        .tab-close {
+            margin-left: 0.5rem;
+            padding: 0.125rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 1rem;
+            height: 1rem;
+            font-size: 0.75rem;
+        }
+        .tab-close:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .menu-item {
+            cursor: pointer;
+            transition: background-color 0.2s;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            white-space: nowrap;
+        }
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300">
+
+    <div class="main-container">
+        <!-- 标签栏 -->
+        <div class="flex items-center justify-between px-3 py-1 bg-gray-800 text-gray-200 border-b border-gray-600">
+            <div class="flex items-center">
+                <div id="tabs-container" class="flex items-center">
+                    <!-- 标签页将动态生成 -->
+                </div>
+                <button id="new-tab-btn" class="ml-2 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded">+ 新建</button>
+            </div>
+            <div class="text-xs opacity-75">多标签编辑器</div>
+        </div>
+        
+        <!-- 菜单栏 -->
+        <div id="status-bar" class="flex items-center justify-between px-3 py-1 bg-blue-800 text-gray-200 text-sm font-sans transition-colors duration-300 flex-shrink-0">
+            <!-- 左侧功能区 -->
+            <div class="flex items-center space-x-2">
+                <span id="status-theme" class="menu-item">主题</span>
+                <span id="language-indicator" class="menu-item font-bold bg-gray-600"></span>
+                <span class="border-l border-gray-500 h-5"></span>
+                <span id="status-search" class="menu-item">搜索</span>
+                <span id="status-format" class="menu-item">格式化</span>
+                <span id="status-goto" class="menu-item">跳转行数</span>
+                <span id="status-paste" class="menu-item">粘贴剪贴板</span>
+                <span id="status-copy" class="menu-item">复制</span>
+            </div>
+            <!-- 右侧统计区 -->
+            <div class="flex items-center space-x-4 text-xs font-mono">
+                <span id="total-lines" class="menu-item"></span>
+                <span id="total-chars" class="menu-item"></span>
+                <span id="cursor-position" class="menu-item"></span>
+            </div>
+        </div>
+        <!-- Monaco Editor 容器 -->
+        <div id="editor-container"></div>
+    </div>
+
+    <!-- 引入外部依赖 -->
+    <script src="js/beautify.min.js"></script>
+    <script src="js/mysql.umd.js"></script>
+    <script src="js/loader.min.js"></script>
+    
+    <script>
+        let currentTabId = null;
+        let tabCounter = 0;
+        let editorTabs = new Map(); // 存储每个标签的编辑器实例和数据
+        let currentTheme = 'dark';
+        
+        // 创建新标签页
+        function createNewTab(content = '', title = null) {
+            tabCounter++;
+            const tabId = `tab_${tabCounter}`;
+            const tabTitle = title || `编辑器 ${tabCounter}`;
+            
+            // 创建标签按钮
+            const tabElement = document.createElement('div');
+            tabElement.className = 'tab-item tab-inactive';
+            tabElement.dataset.tabId = tabId;
+            tabElement.innerHTML = `
+                <span class="tab-title" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${tabTitle}</span>
+                <span class="tab-close" onclick="closeTab('${tabId}', event)">×</span>
+            `;
+            tabElement.onclick = (e) => {
+                if (!e.target.classList.contains('tab-close')) {
+                    switchToTab(tabId);
+                }
+            };
+            
+            // 插入到新建按钮前
+            const tabsContainer = document.getElementById('tabs-container');
+            tabsContainer.appendChild(tabElement);
+            
+            // 存储标签数据
+            editorTabs.set(tabId, {
+                content: content,
+                title: tabTitle,
+                language: 'plaintext',
+                element: tabElement,
+                editorInstance: null
+            });
+            
+            // 切换到新标签
+            switchToTab(tabId);
+            
+            return tabId;
+        }
+        
+        // 切换到指定标签
+        function switchToTab(tabId) {
+            // 更新标签样式
+            document.querySelectorAll('.tab-item').forEach(tab => {
+                if (tab.dataset.tabId === tabId) {
+                    tab.className = 'tab-item tab-active';
+                } else {
+                    tab.className = 'tab-item tab-inactive';
+                }
+            });
+            
+            // 隐藏当前编辑器
+            if (currentTabId && editorTabs.has(currentTabId)) {
+                const currentTab = editorTabs.get(currentTabId);
+                if (currentTab.editorInstance) {
+                    currentTab.editorInstance.getContainerDomNode().style.display = 'none';
+                }
+            }
+            
+            currentTabId = tabId;
+            const targetTab = editorTabs.get(tabId);
+            
+            // 如果编辑器实例不存在，创建一个
+            if (!targetTab.editorInstance) {
+                createEditorForTab(tabId);
+            } else {
+                // 显示现有编辑器
+                targetTab.editorInstance.getContainerDomNode().style.display = 'block';
+                targetTab.editorInstance.focus();
+            }
+            
+            updateUI();
+        }
+        
+        // 为标签创建编辑器实例
+        function createEditorForTab(tabId) {
+            const tabData = editorTabs.get(tabId);
+            
+            require(['vs/editor/editor.main'], function() {
+                const editorInstance = monaco.editor.create(document.getElementById('editor-container'), {
+                    value: tabData.content,
+                    language: tabData.language,
+                    automaticLayout: true,
+                    wordWrap: 'on',
+                    fontSize: 14,
+                    minimap: { enabled: true },
+                    theme: currentTheme === 'dark' ? 'vs-dark' : 'vs-light'
+                });
+                
+                // 绑定事件
+                editorInstance.onDidChangeModelContent(() => {
+                    // 保存内容到标签数据
+                    tabData.content = editorInstance.getValue();
+                    updateUI();
+                });
+                
+                editorInstance.onDidChangeCursorPosition(updateUI);
+                
+                // 存储编辑器实例
+                tabData.editorInstance = editorInstance;
+                
+                // 聚焦编辑器
+                editorInstance.focus();
+                
+                updateUI();
+            });
+        }
+        
+        // 关闭标签
+        function closeTab(tabId, event) {
+            event.stopPropagation();
+            
+            if (editorTabs.size <= 1) {
+                return; // 至少保留一个标签
+            }
+            
+            const tabData = editorTabs.get(tabId);
+            
+            // 销毁编辑器实例
+            if (tabData.editorInstance) {
+                tabData.editorInstance.dispose();
+            }
+            
+            // 移除DOM元素
+            tabData.element.remove();
+            
+            // 删除数据
+            editorTabs.delete(tabId);
+            
+            // 如果关闭的是当前标签，切换到第一个可用标签
+            if (currentTabId === tabId) {
+                const firstTabId = editorTabs.keys().next().value;
+                switchToTab(firstTabId);
+            }
+        }
+        
+        // 更新UI状态
+        function updateUI() {
+            if (!currentTabId || !editorTabs.has(currentTabId)) return;
+            
+            const currentTab = editorTabs.get(currentTabId);
+            const editorInstance = currentTab.editorInstance;
+            
+            if (!editorInstance) return;
+            
+            const model = editorInstance.getModel();
+            const position = editorInstance.getPosition();
+            
+            if (model && position) {
+                document.getElementById('total-lines').textContent = `${model.getLineCount()} 行`;
+                document.getElementById('total-chars').textContent = `${model.getValueLength()} 字符`;
+                document.getElementById('cursor-position').textContent = `行 ${position.lineNumber}, 列 ${position.column}`;
+            }
+            
+            // 更新语言指示器
+            document.getElementById('language-indicator').textContent = model.getLanguageId().toUpperCase();
+        }
+        
+        // 格式化当前编辑器内容
+        function formatCurrentEditor() {
+            if (!currentTabId || !editorTabs.has(currentTabId)) return;
+            
+            const currentTab = editorTabs.get(currentTabId);
+            const editorInstance = currentTab.editorInstance;
+            
+            if (editorInstance) {
+                try {
+                    editorInstance.getAction('editor.action.formatDocument').run();
+                } catch (e) {
+                    console.error("格式化失败:", e);
+                }
+            }
+        }
+        
+        // 复制当前编辑器内容
+        function copyCurrentEditor() {
+            if (!currentTabId || !editorTabs.has(currentTabId)) return;
+            
+            const currentTab = editorTabs.get(currentTabId);
+            const editorInstance = currentTab.editorInstance;
+            
+            if (editorInstance && window.utoolsHelper) {
+                const content = editorInstance.getValue();
+                const success = window.utoolsHelper.setClipboardContent(content);
+                if (success && window.utoolsHelper.showNotification) {
+                    window.utoolsHelper.showNotification('内容已复制到剪贴板');
+                }
+            }
+        }
+        
+        // 粘贴剪贴板内容到当前编辑器
+        function pasteToCurrentEditor() {
+            if (!currentTabId || !editorTabs.has(currentTabId)) return;
+            
+            const currentTab = editorTabs.get(currentTabId);
+            const editorInstance = currentTab.editorInstance;
+            
+            if (editorInstance && window.utoolsHelper) {
+                const content = window.utoolsHelper.getClipboardContent();
+                if (content) {
+                    editorInstance.setValue(content);
+                    if (window.utoolsHelper.showNotification) {
+                        window.utoolsHelper.showNotification(`已粘贴剪贴板内容，共${content.length}字符`);
+                    }
+                }
+            }
+        }
+        
+        // 切换主题
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.classList.toggle('dark', currentTheme === 'dark');
+            
+            // 更新所有编辑器实例的主题
+            editorTabs.forEach(tabData => {
+                if (tabData.editorInstance) {
+                    monaco.editor.setTheme(currentTheme === 'dark' ? 'vs-dark' : 'vs-light');
+                }
+            });
+        }
+        
+        // 初始化
+        window.onload = function() {
+            require.config({ paths: { 'vs': 'js/vs' }});
+            
+            // 创建第一个标签
+            const initialContent = window.selectedContent || (window.utoolsHelper ? window.utoolsHelper.getSelectedContent() : '') || '';
+            createNewTab(initialContent, '主编辑器');
+            
+            // 绑定事件
+            document.getElementById('new-tab-btn').onclick = () => {
+                const content = window.utoolsHelper ? window.utoolsHelper.getClipboardContent() : '';
+                createNewTab(content);
+            };
+            
+            document.getElementById('status-theme').onclick = toggleTheme;
+            document.getElementById('status-format').onclick = formatCurrentEditor;
+            document.getElementById('status-copy').onclick = copyCurrentEditor;
+            document.getElementById('status-paste').onclick = pasteToCurrentEditor;
+            document.getElementById('status-search').onclick = () => {
+                if (currentTabId && editorTabs.has(currentTabId)) {
+                    const currentTab = editorTabs.get(currentTabId);
+                    if (currentTab.editorInstance) {
+                        currentTab.editorInstance.getAction('actions.find').run();
+                    }
+                }
+            };
+            document.getElementById('status-goto').onclick = () => {
+                if (currentTabId && editorTabs.has(currentTabId)) {
+                    const currentTab = editorTabs.get(currentTabId);
+                    if (currentTab.editorInstance) {
+                        currentTab.editorInstance.getAction('editor.action.gotoLine').run();
+                    }
+                }
+            };
+            
+            // 监听选中内容变化，自动创建新标签
+            window.addEventListener('selectedContentChanged', (event) => {
+                if (event.detail.content) {
+                    createNewTab(event.detail.content, '选中文本');
+                }
+            });
+            
+            setTheme(window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        };
+        
+        function setTheme(theme) {
+            currentTheme = theme;
+            const isDark = theme === 'dark';
+            document.body.classList.toggle('dark', isDark);
+        }
+        
+        // 暴露给外部的函数
+        window.addNewTabWithContent = function(content, title) {
+            createNewTab(content, title);
+        };
+        
+        window.getCurrentEditor = function() {
+            if (currentTabId && editorTabs.has(currentTabId)) {
+                return editorTabs.get(currentTabId).editorInstance;
+            }
+            return null;
+        };
+    </script>
+</body>
+</html> 
